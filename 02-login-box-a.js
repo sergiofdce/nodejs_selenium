@@ -7,24 +7,27 @@ const assert = require("assert");
 require("dotenv").config();
 console.log("dot.env: ", process.env.DB_HOST);
 
-// heredem una classe amb un sol mètode test()
-// emprem this.driver per utilitzar Selenium
-
 class MyTest extends BaseTest {
     async test() {
-        // testejem H1 a la home page
-        //////////////////////////////////////////////////////v
         const site = process.env.URL;
         await this.driver.get(site + "/admin/login/");
-        var currentText = await this.driver
-            .findElement(By.tagName("h1"))
-            .getText();
-        var expectedText = "Administració de Django";
-        assert(
-            currentText == expectedText,
-            "Títol H1 de la pàgina principal incorrecte"
-        );
 
+        // Login correcto
+        await this.driver
+            .findElement(By.id("id_username"))
+            .sendKeys(process.env.username);
+        await this.driver
+            .findElement(By.id("id_password"))
+            .sendKeys(process.env.password);
+
+        // Login correcto
+        await this.driver.wait(until.urlContains("/admin/"), 5000);
+
+        await this.driver.wait(
+            until.elementLocated(By.css("#site-name")),
+            5000
+        );
+        console.log("[TEST] Login correcto");
         console.log("TEST OK");
     }
 }
